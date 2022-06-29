@@ -9,22 +9,50 @@
       crossorigin="anonymous"
     />
     <title>{% block title %}{% endblock %}</title>
+    {% load static %}
 </head>
 
 <body>
 <nav class="navbar navbar-expand-lg navbar-light"
      style="background-color: #F2EDED;">
     <div class="container-fluid">
-        <div>
-            <ul class="navbar-nav">
-                <li class="nav-item"> <a class="nav-link" href="{% url 'home' %}">Home</a></li>
-            </ul>
-        </div>
-        <div>
-            <ul class="navbar-nav">
-                <li class="nav-item"> <a class="nav-link" href="{% url 'login' %}">Login</a></li>
-            </ul>
-        </div>
+
+        <ul class="navbar-nav">
+            <li class="nav-item"> <a class="nav-link" href="{% url 'home' %}">Home</a></li>
+        </ul>
+
+        <ul class="navbar-nav">
+            {% if user.is_authenticated %}
+                <span class="navbar-text"> Hello, {{ user.username }}</span>
+                {% if user.image %}
+                    <a href="{% url 'profile' %}">
+                        <img class="img"
+                             style="height: 10vh; aspect-ratio: 1/1; margin: 0 10px 0 10px"
+                             href="{% url 'profile' %}"
+                             src="{{ user.image.url }}" />
+                    </a>
+                {% else %}
+                    <a href="{% url 'profile' %}">
+                        <img class="img"
+                             style="height: 5vh; aspect-ratio: 1/1"
+                             src="static/images/default_user.jpg" />
+                    </a>
+                {% endif %}
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">
+                        | Logout
+                    </a>
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">
+                        Login
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+
     </div>
 </nav>
 
