@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.views import PasswordChangeView
-from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.views import PasswordChangeView, PasswordResetView, PasswordResetConfirmView
+from django.contrib.auth.forms import PasswordChangeForm, PasswordResetForm
 from .forms import RegisterForm, ProfileForm
 
 
@@ -27,6 +27,15 @@ def sign_up(request):
 class CustomPasswordChangeView(PasswordChangeView):
     form_class = PasswordChangeForm
     success_url = reverse_lazy('profile')
+
+
+class CustomPasswordResetView(PasswordResetView):
+    form_class = PasswordResetForm
+    success_url = reverse_lazy('profile')
+
+
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    success_url = reverse_lazy('login')
 
 
 @login_required(login_url=reverse_lazy('login'))
