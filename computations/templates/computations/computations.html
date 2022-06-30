@@ -1,0 +1,25 @@
+{% extends 'users/base.html' %}
+
+{% block title %}
+    Computations page
+{% endblock %}
+
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+    <div class="computations-wrapper">
+        <div class="drop-zone">
+            <span class="drop-zone__prompt">Drop image here or click to upload</span>
+            <input type="file" name="myFile" class="drop-zone__input">
+        </div>
+        <div class="computations-button-wrapper">
+            <button type="submit" class="btn" style="background-color: #F2EDED">Compute</button>
+        </div>
+        {#            <img src='media/computations/images/2/1.jpg'/>#}
+    </div>
+    <div class="form-floating">
+            <textarea class="form-control" placeholder="Results will be here" id="floatingTextarea"></textarea>
+            <label for="floatingTextarea">Results</label>
+    </div>
+{% endblock %}
