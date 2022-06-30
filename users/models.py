@@ -7,7 +7,7 @@ def get_upload_path(instance, filename):
     upload_to = 'users/images'
 
     ext = filename.split('.')[-1]
-    filename = f'{instance.username}.{ext}'
+    filename = f'{instance.id}.{ext}'
 
     return os.path.join(upload_to, filename)
 

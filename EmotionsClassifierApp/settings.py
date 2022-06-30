@@ -39,9 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'users',
     'crispy_forms',
-    'crispy_bootstrap5'
+    'crispy_bootstrap5',
+    'users',
+    'computations'
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
@@ -85,10 +86,16 @@ WSGI_APPLICATION = 'EmotionsClassifierApp.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE' : 'django.db.backends.postgresql_psycopg2',
+        'HOST' : 'ec2-54-76-43-89.eu-west-1.compute.amazonaws.com',
+        'NAME' : 'daqil187q84hci',
+        'POST' : '5432',
+        'USER' : 'lcecquluvrjhug',
+        'PASSWORD' : '8862d9d60a3459d750cdbaa2b793a25e3889f0375f7997231a2b1f380b94baa7',
+
     }
 }
+
 
 
 # Password validation
