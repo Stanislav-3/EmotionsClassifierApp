@@ -8,18 +8,28 @@
 
 
 {% block content %}
-    <div class="computations-wrapper">
-        <div class="drop-zone">
-            <span class="drop-zone__prompt">Drop image here or click to upload</span>
-            <input type="file" name="myFile" class="drop-zone__input">
+    <form  method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="computations-wrapper">
+            <div class="drop-zone">
+                <span class="drop-zone__prompt">Drop image here or click to upload</span>
+                <input type="file" class="drop-zone__input" name="image">
+            </div>
+            <div class="computations-button-wrapper">
+                <button type="submit" class="btn" style="background-color: #F2EDED">Compute</button>
+            </div>
         </div>
-        <div class="computations-button-wrapper">
-            <button type="submit" class="btn" style="background-color: #F2EDED">Compute</button>
+        <div class="form-floating">
+                <textarea class="form-control"
+                          style="min-height: 25vh"
+                          placeholder="Results will be here"
+                          id="floatingTextarea"
+                          name="output"
+                          readonly>
+                    {{ output }}
+                </textarea>
+                <label for="floatingTextarea">Results</label>
         </div>
-        {#            <img src='media/computations/images/2/1.jpg'/>#}
-    </div>
-    <div class="form-floating">
-            <textarea class="form-control" placeholder="Results will be here" id="floatingTextarea"></textarea>
-            <label for="floatingTextarea">Results</label>
-    </div>
+    </form>
 {% endblock %}

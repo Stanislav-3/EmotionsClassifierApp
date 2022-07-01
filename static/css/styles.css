@@ -3,7 +3,6 @@
 }
 
 .computations-wrapper {
-  /*background-color: gray;*/
   margin-top: 5vh;
   margin-bottom: 5vh;
   display: flex;
@@ -20,6 +19,7 @@ button {
 
 .drop-zone {
   max-width: 200px;
+  min-width: 200px;
   height: 200px;
   padding: 25px;
   display: flex;

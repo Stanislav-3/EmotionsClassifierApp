@@ -2,27 +2,32 @@ document.querySelectorAll(".drop-zone__input").forEach((inputElement) => {
   const dropZoneElement = inputElement.closest(".drop-zone");
 
   dropZoneElement.addEventListener("click", (e) => {
+    console.log('2')
     inputElement.click();
   });
 
   inputElement.addEventListener("change", (e) => {
+    console.log('3')
     if (inputElement.files.length) {
       updateThumbnail(dropZoneElement, inputElement.files[0]);
     }
   });
 
   dropZoneElement.addEventListener("dragover", (e) => {
+    console.log('4')
     e.preventDefault();
     dropZoneElement.classList.add("drop-zone--over");
   });
 
   ["dragleave", "dragend"].forEach((type) => {
     dropZoneElement.addEventListener(type, (e) => {
+      console.log('5')
       dropZoneElement.classList.remove("drop-zone--over");
     });
   });
 
   dropZoneElement.addEventListener("drop", (e) => {
+    console.log('6')
     e.preventDefault();
 
     if (e.dataTransfer.files.length) {
@@ -41,6 +46,7 @@ document.querySelectorAll(".drop-zone__input").forEach((inputElement) => {
  * @param {File} file
  */
 function updateThumbnail(dropZoneElement, file) {
+  console.log('1')
   let thumbnailElement = dropZoneElement.querySelector(".drop-zone__thumb");
 
   // First time - remove the prompt
@@ -59,6 +65,7 @@ function updateThumbnail(dropZoneElement, file) {
 
   // Show thumbnail for image files
   if (file.type.startsWith("image/")) {
+    console.log('-2')
     const reader = new FileReader();
 
     reader.readAsDataURL(file);
@@ -66,6 +73,7 @@ function updateThumbnail(dropZoneElement, file) {
       thumbnailElement.style.backgroundImage = `url('${reader.result}')`;
     };
   } else {
+    console.log('-1')
     thumbnailElement.style.backgroundImage = null;
   }
 }
