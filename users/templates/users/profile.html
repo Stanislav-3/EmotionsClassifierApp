@@ -7,7 +7,7 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %} {{ form|crispy }}
         <p> Want to change password? Change one <a href="{% url 'password_change' %}"> here </a></p>
         <button type="submit" class="btn" style="background-color: #F2EDED;">Change profile</button>

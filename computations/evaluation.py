@@ -20,7 +20,7 @@ def load_image_into_numpy_array(data):
 
 transform = transforms.Compose([
     transforms.ToTensor(),
-    transforms.Grayscale(num_output_channels=1)
+    transforms.Grayscale(num_output_channels=1),
     ])
 
 
@@ -39,6 +39,7 @@ def predict(image):
 
     image = transforms.CenterCrop(min(image.shape[1:]))(image)
     image = transforms.Resize(48)(image)
+    image = transforms.Normalize(mean=(129.5255663470051,), std=(3993.406726226269,))(image)
 
     save_image(image, 'media/transformed.jpg')
 

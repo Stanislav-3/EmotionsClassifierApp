@@ -28,15 +28,15 @@
                 {% if user.image %}
                     <a href="{% url 'profile' %}">
                         <img class="img"
-                             style="height: 10vh; aspect-ratio: 1/1; margin: 0 10px 0 10px"
+                             style="height: 10vh; max-height: 10vh; aspect-ratio: 1/1; margin: 0 10px 0 10px"
                              href="{% url 'profile' %}"
                              src="{{ user.image.url }}" />
                     </a>
                 {% else %}
                     <a href="{% url 'profile' %}">
                         <img class="img"
-                             style="height: 5vh; aspect-ratio: 1/1"
-                             src="static/images/default_user.jpg" />
+                             style="height: 10vh; max-height: 10vh; aspect-ratio: 1/1; margin: 0 10px 0 10px"
+                             src="/static/images/default_user.jpg" />
                     </a>
                 {% endif %}
 

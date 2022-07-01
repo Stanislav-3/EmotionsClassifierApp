@@ -11,6 +11,7 @@ Login page
         {% csrf_token %}
         {{ form|crispy }}
         <p> Don't have an account? Create one <a href="{% url 'sign_up' %}"> here </a> </p>
+        <p> Forgot password? Restore <a href="{% url 'password_reset' %}"> here </a> </p>
         <button type="submit" class="btn" style="background-color: #F2EDED;">Login</button>
     </form>
 {% endblock %}

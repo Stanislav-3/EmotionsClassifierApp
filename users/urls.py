@@ -4,9 +4,8 @@ from django.contrib.auth.views import PasswordChangeDoneView, PasswordResetView,
 from .views import CustomPasswordChangeView, CustomPasswordResetConfirmView
 
 urlpatterns = [
-    path('', views.home, name='home'),
     path('profile', views.profile, name='profile'),
-
+    path('', views.home, name='home'),
     path('sign-up', views.sign_up, name='sign_up'),
     path('password_change/',
          CustomPasswordChangeView.as_view(template_name="registration/password_change.html"),
