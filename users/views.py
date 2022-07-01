@@ -13,6 +13,20 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+class CustomPasswordChangeView(PasswordChangeView):
+    form_class = PasswordChangeForm
+    success_url = reverse_lazy('profile')
+
+
+class CustomPasswordResetView(PasswordResetView):
+    form_class = PasswordResetForm
+    success_url = reverse_lazy('profile')
+
+
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    success_url = reverse_lazy('login')
+
+
 def home(request):
     logger.debug('Redirecting to /home')
 
@@ -35,20 +49,6 @@ def sign_up(request):
     return render(request, 'registration/sign_up.html', {'form': form})
 
 
-class CustomPasswordChangeView(PasswordChangeView):
-    form_class = PasswordChangeForm
-    success_url = reverse_lazy('profile')
-
-
-class CustomPasswordResetView(PasswordResetView):
-    form_class = PasswordResetForm
-    success_url = reverse_lazy('profile')
-
-
-class CustomPasswordResetConfirmView(PasswordResetConfirmView):
-    success_url = reverse_lazy('login')
-
-
 @login_required(login_url=reverse_lazy('login'))
 def profile(request):
     links = None
@@ -57,7 +57,7 @@ def profile(request):
     if request.method == 'POST':
         logger.debug('Profile view | POST')
 
-        form = ProfileForm(request.POST, instance=request.user)
+        form = ProfileForm(request.POST, files=request.FILES, instance=request.user)
 
         if form.is_valid():
             form.save()

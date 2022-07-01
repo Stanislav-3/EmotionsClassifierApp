@@ -42,6 +42,7 @@ def beautify_probabilities(probabilities):
     return output
 
 
+@login_required(login_url=reverse_lazy('login'))
 def computations(request):
     if request.method == 'POST':
         logger.debug('rendering computations page | POST')
@@ -65,6 +66,7 @@ def computations(request):
         return render(request, 'computations/computations.html', {'output': 'Results will be here'})
 
 
+@login_required(login_url=reverse_lazy('login'))
 def result(request, username, computation_id):
     logger.debug('rendering computations result page | GET')
 
@@ -84,6 +86,7 @@ def result(request, username, computation_id):
     })
 
 
+@login_required(login_url=reverse_lazy('login'))
 def _download(request, username, computation_id, ext):
     logger.debug(f'_download {request.user.username}/{computation_id}.{ext}')
 
@@ -97,6 +100,7 @@ def _download(request, username, computation_id, ext):
     return response
 
 
+@login_required(login_url=reverse_lazy('login'))
 def dump_json(request, username, computation_id):
     logger.debug(f'dump json')
 
@@ -126,6 +130,7 @@ def dump_json(request, username, computation_id):
     return _download(request, username, computation_id, 'json')
 
 
+@login_required(login_url=reverse_lazy('login'))
 def dump_pdf(request, username, computation_id):
     logger.debug(f'dump pdf')
 
