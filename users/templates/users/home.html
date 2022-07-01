@@ -2,5 +2,9 @@
 
 
 {% block content %}
-    <h1>Home page!</h1>
+    <form method="get" action="{% url 'computations' %}">
+        <div class="home-button-wrapper">
+            <button class="btn" style="background-color: #F2EDED">Compute</button>
+        </div>
+    </form>
 {% endblock %}

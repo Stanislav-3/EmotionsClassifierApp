@@ -30,8 +30,6 @@ def beautify_probabilities(probabilities):
 
 
 def computations(request):
-    output = 'Results will be here'
-
     if request.method == 'POST':
         image = request.FILES['image'].file
         # output = request.POST['output']
@@ -45,10 +43,10 @@ def computations(request):
                                   user=request.user)
         computation.save()
         computation.image.save(f'{computation.id}.jpg', file_content)
-    else:
-        pass
 
-    return render(request, 'computations/computations.html', {'output': output})
+        return redirect(f'/computations/{request.user.username}/{computation.id}')
+    else:
+        return render(request, 'computations/computations.html', {'output': 'Results will be here'})
 
 
 def result(request, username, computation_id):
@@ -62,7 +60,6 @@ def result(request, username, computation_id):
     if computation.user != user:
         return redirect(reverse('home'))
 
-    print(computation.image.url)
     return render(request, 'computations/result.html', {
         'predictions': beautify_probabilities(computation.predictions),
         'img_src': computation.image.url

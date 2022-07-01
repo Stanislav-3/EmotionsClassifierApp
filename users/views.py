@@ -5,6 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import PasswordChangeView, PasswordResetView, PasswordResetConfirmView
 from django.contrib.auth.forms import PasswordChangeForm, PasswordResetForm
 from .forms import RegisterForm, ProfileForm
+from django.contrib.auth import get_user_model
+from computations.models import Computation
 
 
 def home(request):
@@ -40,6 +42,9 @@ class CustomPasswordResetConfirmView(PasswordResetConfirmView):
 
 @login_required(login_url=reverse_lazy('login'))
 def profile(request):
+    links = None
+    texts = None
+
     if request.method == 'POST':
         form = ProfileForm(request.POST, instance=request.user)
 
@@ -48,4 +53,9 @@ def profile(request):
             return redirect(reverse('home'))
     else:
         form = ProfileForm(instance=request.user)
-    return render(request, 'users/profile.html', {'form': form})
+        computations = Computation.objects.filter(user=request.user)
+
+        links = [f'/computations/{request.user.username}/{computation.id}' for computation in computations]
+        texts = [f'Computation #{computation.id}' for computation in computations]
+
+    return render(request, 'users/profile.html', {'form': form, 'computations': zip(links, texts)})
