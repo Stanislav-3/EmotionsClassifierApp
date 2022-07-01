@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 from PIL import Image
 from io import BytesIO
 import torch
@@ -21,6 +22,7 @@ transform = transforms.Compose([
 
 
 def predict(image):
+    image = copy.deepcopy(image)
     image = load_image_into_numpy_array(image.read())
 
     # if png remove 4th channel

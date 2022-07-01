@@ -9,8 +9,22 @@
 {% block content %}
     <form method="post">
         {% csrf_token %} {{ form|crispy }}
-        <p> Want to change password? Change one <a href="{% url 'password_change' %}"> here </a> </p>
+        <p> Want to change password? Change one <a href="{% url 'password_change' %}"> here </a></p>
         <button type="submit" class="btn" style="background-color: #F2EDED;">Change profile</button>
+        <div class="form-floating">
+            <div class="form-control"
+                 style="min-height: 25vh; margin-top: 30px; overflow: scroll"
+                 placeholder="Results will be here"
+                 id="floatingTextarea"
+                 name="output"
+                 readonly>
+                {% for link, text in computations %}
+                    <a href={{ link }}> {{ text }} </a>
+                    <br>
+                {% endfor %}
+            </div>
+            <label for="floatingTextarea">Previous computations</label>
+        </div>
     </form>
 {% endblock %}
 

@@ -13,6 +13,20 @@
   margin: auto;
 }
 
+.home-button-wrapper {
+  display: flex;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+  height: 50vh;
+  width: 100%;
+}
+
+.home-button-wrapper button {
+  width: 200px;
+  height: 75px;
+}
+
 button {
   background-color: #F2EDED;
 }
