@@ -2,9 +2,15 @@ import os
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from users.models import CustomUser
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_upload_path(instance, filename):
+    logger.debug('computations.models get upload path')
+
     upload_to = f'computations/images/{instance.user.id}'
 
     ext = filename.split('.')[-1]
