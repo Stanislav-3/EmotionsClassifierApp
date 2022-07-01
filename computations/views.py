@@ -1,13 +1,20 @@
+import mimetypes
+
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
+
+from EmotionsClassifierApp.settings import BASE_DIR
 from .models import Computation
 from computations.evaluation import predict
 from django.core.files.base import ContentFile
 from django.contrib.auth import get_user_model
 import numpy as np
-
+import json
+import os
+from fpdf import FPDF
 
 target_names = {
     0: 'Angry',
@@ -64,3 +71,71 @@ def result(request, username, computation_id):
         'predictions': beautify_probabilities(computation.predictions),
         'img_src': computation.image.url
     })
+
+
+def _download(request, username, computation_id, ext):
+    filename = f'{computation_id}.{ext}'
+    filepath = f'{BASE_DIR}/computations/dumps/{ext}/{request.user.username}/{filename}'
+
+    file = open(filepath, 'rb')
+    mime_type, _ = mimetypes.guess_type(filepath)
+    response = HttpResponse(file, content_type=mime_type)
+    response['Content-Disposition'] = "attachment; filename=%s" % filename
+    return response
+
+
+def dump_json(request, username, computation_id):
+    directory = f'computations/dumps/json/{request.user.username}'
+    computation = Computation.objects.filter(id=computation_id)[0]
+
+    if os.path.exists(directory):
+        if os.path.exists(f'{directory}/{computation_id}.json'):
+            return _download(request, username, computation_id, 'json')
+    else:
+        os.makedirs(directory)
+
+    b = None
+
+    with open(f'media/computations/images/{request.user.id}/{computation_id}.jpg', "rb") as image:
+        b = str(image.read())
+
+    d = {f'Computation': {
+        'Image': b,
+        'Predictions': computation.predictions
+
+    }}
+
+    f = open(f'{directory}/{computation.id}.json', 'w')
+    json.dump(d, f)
+
+    return _download(request, username, computation_id, 'json')
+
+
+def dump_pdf(request, username, computation_id):
+    directory = f'computations/dumps/pdf/{request.user.username}'
+
+    if os.path.exists(f'{directory}/{computation_id}.pdf'):
+        if os.path.exists(f'{directory}/{computation_id}.pdf'):
+            return _download(request, username, computation_id, 'pdf')
+    else:
+        os.makedirs(directory)
+
+    pdf = FPDF('P', 'mm', 'Letter')
+
+    pdf.add_page()
+
+    computation = Computation.objects.filter(id=computation_id)[0]
+    predictions = computation.predictions
+
+    pdf.set_font('helvetica', 'b', 18)
+    pdf.cell(0, 10, f'Image', ln=True)
+    pdf.image(f'media/computations/images/{request.user.id}/{computation_id}.jpg', w=48, h=48)
+
+    pdf.cell(0, 10, f'Predictions', ln=True)
+    pdf.set_font('helvetica', '', 16)
+    for i in range(len(predictions)):
+        pdf.cell(0, 10, f'{target_names[i]}:{predictions[i]}', ln=True)
+
+    pdf.output(f'{directory}/{computation_id}.pdf')
+
+    return _download(request, username, computation_id, 'pdf')

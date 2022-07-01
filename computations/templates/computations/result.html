@@ -20,9 +20,24 @@
             <div class="computations-button-wrapper">
                 <button class="btn" style="background-color: #F2EDED">Return to computations</button>
             </div>
-
         </div>
     </form>
+
+
+    <form method="get" action="{{ request.get_full_path }}dump_json">
+        <div class="computations-button-wrapper">
+            <button class="btn" style="background-color: #F2EDED">Download json</button>
+        </div>
+    </form>
+
+    <form method="get" action="{{ request.get_full_path }}dump_pdf">
+        <div class="computations-button-wrapper">
+            <button class="btn" style="background-color: #F2EDED; margin-top: 10px; margin-bottom: 10px">Download pdf
+            </button>
+        </div>
+    </form>
+
+
     <div class="form-floating">
                 <textarea class="form-control"
                           style="min-height: 25vh"
