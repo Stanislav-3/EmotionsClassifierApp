@@ -15,6 +15,10 @@ import numpy as np
 import json
 import os
 from fpdf import FPDF
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 target_names = {
     0: 'Angry',
@@ -28,6 +32,8 @@ target_names = {
 
 
 def beautify_probabilities(probabilities):
+    logger.debug('computations.models get upload path')
+
     output = '\n'
     for idx in np.argsort(probabilities)[::-1]:
         tabs = '\t\t' if len(target_names[idx]) > 3 else '\t\t\t'
@@ -38,6 +44,8 @@ def beautify_probabilities(probabilities):
 
 def computations(request):
     if request.method == 'POST':
+        logger.debug('rendering computations page | POST')
+
         image = request.FILES['image'].file
         # output = request.POST['output']
         probabilities = predict(image)
@@ -53,10 +61,13 @@ def computations(request):
 
         return redirect(f'/computations/{request.user.username}/{computation.id}')
     else:
+        logger.debug('rendering computations page | GET')
         return render(request, 'computations/computations.html', {'output': 'Results will be here'})
 
 
 def result(request, username, computation_id):
+    logger.debug('rendering computations result page | GET')
+
     computation = Computation.objects.filter(id=computation_id)
     user = get_user_model().objects.filter(username=username)
 
@@ -74,6 +85,8 @@ def result(request, username, computation_id):
 
 
 def _download(request, username, computation_id, ext):
+    logger.debug(f'_download {request.user.username}/{computation_id}.{ext}')
+
     filename = f'{computation_id}.{ext}'
     filepath = f'{BASE_DIR}/computations/dumps/{ext}/{request.user.username}/{filename}'
 
@@ -85,6 +98,8 @@ def _download(request, username, computation_id, ext):
 
 
 def dump_json(request, username, computation_id):
+    logger.debug(f'dump json')
+
     directory = f'computations/dumps/json/{request.user.username}'
     computation = Computation.objects.filter(id=computation_id)[0]
 
@@ -112,6 +127,8 @@ def dump_json(request, username, computation_id):
 
 
 def dump_pdf(request, username, computation_id):
+    logger.debug(f'dump pdf')
+
     directory = f'computations/dumps/pdf/{request.user.username}'
 
     if os.path.exists(f'{directory}/{computation_id}.pdf'):

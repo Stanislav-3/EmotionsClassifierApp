@@ -8,6 +8,9 @@ from torchvision.utils import save_image
 import torch.nn as nn
 import torchvision.models as models
 from .nets import Net
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def load_image_into_numpy_array(data):
@@ -22,6 +25,8 @@ transform = transforms.Compose([
 
 
 def predict(image):
+    logger.debug('Evaluation predict')
+
     image = copy.deepcopy(image)
     image = load_image_into_numpy_array(image.read())
 

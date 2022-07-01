@@ -7,20 +7,29 @@ from django.contrib.auth.forms import PasswordChangeForm, PasswordResetForm
 from .forms import RegisterForm, ProfileForm
 from django.contrib.auth import get_user_model
 from computations.models import Computation
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 def home(request):
+    logger.debug('Redirecting to /home')
+
     return render(request, 'users/home.html')
 
 
 def sign_up(request):
     if request.method == 'POST':
+        logger.debug('Sign up | POST')
+
         form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
             return redirect(reverse('home'))
     else:
+        logger.debug('Sign up | GET')
         form = RegisterForm()
 
     return render(request, 'registration/sign_up.html', {'form': form})
@@ -46,12 +55,16 @@ def profile(request):
     texts = None
 
     if request.method == 'POST':
+        logger.debug('Profile view | POST')
+
         form = ProfileForm(request.POST, instance=request.user)
 
         if form.is_valid():
             form.save()
             return redirect(reverse('home'))
     else:
+        logger.debug('Profile view | GET')
+
         form = ProfileForm(instance=request.user)
         computations = Computation.objects.filter(user=request.user)
 
