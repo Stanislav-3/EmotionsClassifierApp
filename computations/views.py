@@ -2,12 +2,11 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
-from .forms import ComputationForm
 from .models import Computation
 from computations.evaluation import predict
-from PIL import Image
-from io import BytesIO
 from django.core.files.base import ContentFile
+from django.contrib.auth import get_user_model
+import numpy as np
 
 
 target_names = {
@@ -21,6 +20,15 @@ target_names = {
 }
 
 
+def beautify_probabilities(probabilities):
+    output = '\n'
+    for idx in np.argsort(probabilities)[::-1]:
+        tabs = '\t\t' if len(target_names[idx]) > 3 else '\t\t\t'
+        output += f'{target_names[idx]} {tabs} {100 * probabilities[idx]:.1f}\n'
+
+    return output
+
+
 def computations(request):
     output = 'Results will be here'
 
@@ -28,10 +36,8 @@ def computations(request):
         image = request.FILES['image'].file
         # output = request.POST['output']
         probabilities = predict(image)
-        output = '\n'
-        for idx in probabilities.argsort()[::-1]:
-            tabs = '\t\t' if len(target_names[idx]) > 3 else '\t\t\t'
-            output += f'{target_names[idx]} {tabs} {100 * probabilities[idx]:.1f}\n'
+
+        output = beautify_probabilities(probabilities)
 
         # add a new computation to db
         file_content = ContentFile(request.FILES['image'].read())
@@ -43,3 +49,21 @@ def computations(request):
         pass
 
     return render(request, 'computations/computations.html', {'output': output})
+
+
+def result(request, username, computation_id):
+    computation = Computation.objects.filter(id=computation_id)
+    user = get_user_model().objects.filter(username=username)
+
+    if computation.count() != 1 or user.count() != 1:
+        return redirect(reverse('home'))
+
+    computation, user = computation[0], user[0]
+    if computation.user != user:
+        return redirect(reverse('home'))
+
+    print(computation.image.url)
+    return render(request, 'computations/result.html', {
+        'predictions': beautify_probabilities(computation.predictions),
+        'img_src': computation.image.url
+    })

@@ -1,0 +1,37 @@
+{% extends 'users/base.html' %}
+
+{% block title %}
+    Computation results page
+{% endblock %}
+
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+    {% csrf_token %}
+    <form method="get" action="{% url 'computations' %}">
+        <div class="computations-wrapper">
+            <div class="drop-zone">
+                <img class="drop-zone__result"
+                     style="max-width: 150px; max-height: 150px;"
+                     src="{{ img_src }}"/>
+            </div>
+
+            <div class="computations-button-wrapper">
+                <button class="btn" style="background-color: #F2EDED">Return to computations</button>
+            </div>
+
+        </div>
+    </form>
+    <div class="form-floating">
+                <textarea class="form-control"
+                          style="min-height: 25vh"
+                          placeholder="Results will be here"
+                          id="floatingTextarea"
+                          name="output"
+                          readonly>
+                    {{ predictions }}
+                </textarea>
+        <label for="floatingTextarea">Results</label>
+    </div>
+{% endblock %}
