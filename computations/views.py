@@ -136,7 +136,7 @@ def dump_pdf(request, username, computation_id):
 
     directory = f'computations/dumps/pdf/{request.user.username}'
 
-    if os.path.exists(f'{directory}/{computation_id}.pdf'):
+    if os.path.exists(directory):
         if os.path.exists(f'{directory}/{computation_id}.pdf'):
             return _download(request, username, computation_id, 'pdf')
     else:

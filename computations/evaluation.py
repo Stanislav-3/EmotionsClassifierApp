@@ -9,6 +9,10 @@ import torch.nn as nn
 import torchvision.models as models
 from .nets import Net
 import logging
+import pickle
+from sklearn.preprocessing import StandardScaler
+from joblib import load
+
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +43,10 @@ def predict(image):
 
     image = transforms.CenterCrop(min(image.shape[1:]))(image)
     image = transforms.Resize(48)(image)
-    image = transforms.Normalize(mean=(129.5255663470051,), std=(3993.406726226269,))(image)
+
+    scaler = load('static/models/scaler.joblib')
+    image = scaler.transform(image.reshape(1, 48 * 48)).reshape(1, 48, 48)
+    image = torch.from_numpy(image).float()
 
     save_image(image, 'media/transformed.jpg')
 
