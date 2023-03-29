@@ -1,4 +1,4 @@
-"""EmotionsClassifierApp URL Configuration
+"""django_app URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.0/topics/http/urls/
@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls.static import static
-from EmotionsClassifierApp import settings
+from django_app import settings
 
 
 urlpatterns = [

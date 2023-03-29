@@ -6,7 +6,7 @@ from django.contrib.auth import login, logout
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
 
-from EmotionsClassifierApp.settings import BASE_DIR
+from django_app.settings import BASE_DIR
 from .models import Computation
 from computations.evaluation import predict
 from django.core.files.base import ContentFile
