@@ -1,11 +1,11 @@
-# import os
-# from django.db import models
-# from django.contrib.postgres.fields import ArrayField
-# from users.models import CustomUser
-# import logging
-#
-#
-# logger = logging.getLogger(__name__)
+import os
+from django.db import models
+from django.contrib.postgres.fields import ArrayField
+from users.models import CustomUser
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_upload_path(instance, filename):
@@ -19,10 +19,10 @@ def get_upload_path(instance, filename):
     return os.path.join(upload_to, filename)
 
 
-# class Computation(models.Model):
-#     predictions = ArrayField(models.FloatField(), size=7)
-#     image = models.ImageField(upload_to=get_upload_path)
-#     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-#
-#     def __str__(self):
-#         return f'{self.user.username} | {self.id}'
+class Computation(models.Model):
+    predictions = ArrayField(models.FloatField(), size=7)
+    image = models.ImageField(upload_to=get_upload_path)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.user.username} | {self.id}'

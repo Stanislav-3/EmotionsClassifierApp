@@ -1,5 +1,5 @@
-# import mimetypes
-#
+import mimetypes
+
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
@@ -9,15 +9,14 @@ from django_app.settings import BASE_DIR
 from django.core.files.base import ContentFile
 from django.contrib.auth import get_user_model
 
-# from .models import Computation
-# from computations.evaluation import predict
-# import numpy as np
-# import json
-# import os
-# from fpdf import FPDF
-# import logging
-#
-# logger = logging.getLogger(__name__)
+from .models import Computation
+import json
+import os
+from fpdf import FPDF
+import logging
+import numpy as np
+
+logger = logging.getLogger(__name__)
 
 
 target_names = {
@@ -30,7 +29,6 @@ target_names = {
     6: 'Neutral',
 }
 
-
 def beautify_probabilities(probabilities):
     logger.debug('computations.models get upload path')
 
@@ -42,48 +40,49 @@ def beautify_probabilities(probabilities):
     return output
 
 
-# @login_required(login_url=reverse_lazy('login'))
-# def computations(request):
-#     if request.method == 'POST':
-#         logger.debug('rendering computations page | POST')
-#
-#         image = request.FILES['image'].file
-#         # output = request.POST['output']
-#         probabilities = predict(image)
-#
-#         output = beautify_probabilities(probabilities)
-#
-#         # add a new computation to db
-#         file_content = ContentFile(request.FILES['image'].read())
-#         computation = Computation(predictions=list(probabilities),
-#                                   user=request.user)
-#         computation.save()
-#         computation.image.save(f'{computation.id}.jpg', file_content)
-#
-#         return redirect(f'/computations/{request.user.username}/{computation.id}')
-#     else:
-#         logger.debug('rendering computations page | GET')
-#         return render(request, 'computations/computations.html', {'output': 'Results will be here'})
-#
-#
-# @login_required(login_url=reverse_lazy('login'))
-# def result(request, username, computation_id):
-#     logger.debug('rendering computations result page | GET')
-#
-#     computation = Computation.objects.filter(id=computation_id)
-#     user = get_user_model().objects.filter(username=username)
-#
-#     if computation.count() != 1 or user.count() != 1:
-#         return redirect(reverse('home'))
-#
-#     computation, user = computation[0], user[0]
-#     if computation.user != user:
-#         return redirect(reverse('home'))
-#
-#     return render(request, 'computations/result.html', {
-#         'predictions': beautify_probabilities(computation.predictions),
-#         'img_src': computation.image.url
-#     })
+@login_required(login_url=reverse_lazy('login'))
+def computations(request):
+    if request.method == 'POST':
+        logger.debug('rendering computations page | POST')
+
+        image = request.FILES['image'].file
+        # output = request.POST['output']
+        # probabilities = predict(image)
+        probabilities = [0.1428571429] * 7
+
+        output = beautify_probabilities(probabilities)
+
+        # add a new computation to db
+        file_content = ContentFile(request.FILES['image'].read())
+        computation = Computation(predictions=list(probabilities),
+                                  user=request.user)
+        computation.save()
+        computation.image.save(f'{computation.id}.jpg', file_content)
+
+        return redirect(f'/computations/{request.user.username}/{computation.id}')
+    else:
+        logger.debug('rendering computations page | GET')
+        return render(request, 'computations/computations.html', {'output': 'Results will be here'})
+
+
+@login_required(login_url=reverse_lazy('login'))
+def result(request, username, computation_id):
+    logger.debug('rendering computations result page | GET')
+
+    computation = Computation.objects.filter(id=computation_id)
+    user = get_user_model().objects.filter(username=username)
+
+    if computation.count() != 1 or user.count() != 1:
+        return redirect(reverse('home'))
+
+    computation, user = computation[0], user[0]
+    if computation.user != user:
+        return redirect(reverse('home'))
+
+    return render(request, 'computations/result.html', {
+        'predictions': beautify_probabilities(computation.predictions),
+        'img_src': computation.image.url
+    })
 
 
 @login_required(login_url=reverse_lazy('login'))
