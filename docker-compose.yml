@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  database:
+    image: postgres:14-alpine
+    restart: always
+    ports:
+      - "5432:5432"
+    env_file:
+      .env
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+  django:
+    build:
+      dockerfile: django-app/Dockerfile
+#      context: ./django-app
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+#      python manage.py collectstatic --no-input &&
+    volumes:
+      - .:/django-app
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - database
