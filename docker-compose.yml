@@ -13,15 +13,14 @@ services:
   django:
     build:
       dockerfile: django-app/Dockerfile
-#      context: ./django-app
     command: >
       sh -c "python manage.py migrate &&
              python manage.py runserver 0.0.0.0:8000"
 #      python manage.py collectstatic --no-input &&
+    environment:
+      IN_DOCKER: 1
     volumes:
       - .:/django-app
-    env_file:
-      - .env
     ports:
       - "8000:8000"
     depends_on:

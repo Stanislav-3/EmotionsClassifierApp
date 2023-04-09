@@ -26,17 +26,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
+# Read .env
+environ.Env.read_env(os.path.join(BASE_DIR, '../.env'))
+
 # SECURITY WARNING: keep the secret key used in production secret!
-try:
-    # Localhost
-    environ.Env.read_env(os.path.join(BASE_DIR, '../.env'))
-    SECRET_KEY = env('SECRET_KEY')
-    POSTGRES_HOST = env('POSTGRES_HOST_LOCAL')
-except KeyError:
-    # Docker
-    environ.Env.read_env()
-    SECRET_KEY = env('SECRET_KEY')
-    POSTGRES_HOST = env('POSTGRES_HOST_DOCKER')
+SECRET_KEY = env('SECRET_KEY')
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
@@ -99,7 +93,7 @@ WSGI_APPLICATION = 'django_app.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': env('DATABASE_ENGINE'),
-        'HOST': POSTGRES_HOST,
+        'HOST': env('POSTGRES_HOST_DOCKER') if os.environ.get('IN_DOCKER') else env('POSTGRES_HOST_LOCAL'),
         'NAME': env('POSTGRES_DB'),
         'PORT': env('POSTGRES_PORT'),
         'USER': env('POSTGRES_USER'),
@@ -146,7 +140,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 # STATIC_ROOT = ''
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, 'static/'),
 )
 
 MEDIA_URL = 'media/'
