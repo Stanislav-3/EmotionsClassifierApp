@@ -3,8 +3,8 @@
 __pycache__/
 venv/
 
-# The file containing environment variables
 .env
 data/
+*.log
 
 

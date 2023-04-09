@@ -19,9 +19,6 @@ from django.urls import reverse_lazy
 env = environ.Env(
     DEBUG=(bool, False)
 )
-# Reading .env file
-# os.path.join(BASE_DIR, '.env')
-environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -30,16 +27,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('SECRET_KEY')
+try:
+    # Localhost
+    environ.Env.read_env(os.path.join(BASE_DIR, '../.env'))
+    SECRET_KEY = env('SECRET_KEY')
+    POSTGRES_HOST = env('POSTGRES_HOST_LOCAL')
+except KeyError:
+    # Docker
+    environ.Env.read_env()
+    SECRET_KEY = env('SECRET_KEY')
+    POSTGRES_HOST = env('POSTGRES_HOST_DOCKER')
+
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
-
-
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -94,12 +98,12 @@ WSGI_APPLICATION = 'django_app.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE' : env('DATABASE_ENGINE'),
-        'HOST' : env('POSTGRES_HOST'),
-        'NAME' : env('POSTGRES_DB'),
-        'PORT' : env('POSTGRES_PORT'),
-        'USER' : env('POSTGRES_USER'),
-        'PASSWORD' : env('POSTGRES_PASSWORD'),
+        'ENGINE': env('DATABASE_ENGINE'),
+        'HOST': POSTGRES_HOST,
+        'NAME': env('POSTGRES_DB'),
+        'PORT': env('POSTGRES_PORT'),
+        'USER': env('POSTGRES_USER'),
+        'PASSWORD': env('POSTGRES_PASSWORD'),
     }
 }
 
@@ -189,7 +193,7 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['console', 'file'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
             'propagate': False,
         },
     },
