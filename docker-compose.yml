@@ -16,12 +16,20 @@ services:
     command: >
       sh -c "python manage.py migrate &&
              python manage.py runserver 0.0.0.0:8000"
-#      python manage.py collectstatic --no-input &&
     environment:
       IN_DOCKER: 1
-    volumes:
-      - .:/django-app
     ports:
       - "8000:8000"
     depends_on:
       - database
+      - flask
+  flask:
+    build:
+      dockerfile: flask-cv/Dockerfile
+    ports:
+      - "5001:5001"
+    command: >
+      sh -c "python evaluation.py"
+    environment:
+      FLASK_APP: evaluation
+
