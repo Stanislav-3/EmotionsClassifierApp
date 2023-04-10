@@ -15,6 +15,9 @@ import os
 from fpdf import FPDF
 import logging
 import numpy as np
+from PIL import Image
+from .image_preprocessing.face_detection import get_faces
+from .image_preprocessing.image_crop import get_cropped_images, get_resized_images
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +31,7 @@ target_names = {
     5: 'Surprise',
     6: 'Neutral',
 }
+
 
 def beautify_probabilities(probabilities):
     logger.debug('computations.models get upload path')
@@ -45,9 +49,12 @@ def computations(request):
     if request.method == 'POST':
         logger.debug('rendering computations page | POST')
 
-        image = request.FILES['image'].file
-        # output = request.POST['output']
-        # probabilities = predict(image)
+        image = Image.open(request.FILES['image'].file)
+
+        image, face_boxes = get_faces(image)
+        cropped_images = get_cropped_images(image, face_boxes)
+        resized_images = get_resized_images(cropped_images)
+
         probabilities = [0.1428571429] * 7
 
         output = beautify_probabilities(probabilities)
