@@ -18,6 +18,8 @@ import numpy as np
 from PIL import Image
 from .image_preprocessing.face_detection import get_faces
 from .image_preprocessing.image_crop import get_cropped_images, get_resized_images
+import requests
+import io
 
 logger = logging.getLogger(__name__)
 
@@ -49,14 +51,19 @@ def computations(request):
     if request.method == 'POST':
         logger.debug('rendering computations page | POST')
 
+        print('Type of file', type(request.FILES['image'].file))
         image = Image.open(request.FILES['image'].file)
 
         image, face_boxes = get_faces(image)
         cropped_images = get_cropped_images(image, face_boxes)
         resized_images = get_resized_images(cropped_images)
 
-        probabilities = [0.1428571429] * 7
+        buffer = io.BytesIO()
+        resized_images[0].save(buffer, format='JPEG')
 
+        requests.post('http://127.0.0.1:5000/get-emotions', files={'image': buffer.getvalue()})
+
+        probabilities = [0.1428571429] * 7
         output = beautify_probabilities(probabilities)
 
         # add a new computation to db
