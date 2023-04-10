@@ -61,7 +61,9 @@ def computations(request):
         buffer = io.BytesIO()
         resized_images[0].save(buffer, format='JPEG')
 
-        requests.post('http://127.0.0.1:5000/get-emotions', files={'image': buffer.getvalue()})
+        response = requests.post('http://0.0.0.0:5001/get-emotions', files={'image': buffer.getvalue()})
+        d = json.loads(response.text)
+        print(d)
 
         probabilities = [0.1428571429] * 7
         output = beautify_probabilities(probabilities)

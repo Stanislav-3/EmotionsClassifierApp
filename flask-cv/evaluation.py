@@ -1,26 +1,39 @@
-from flask import Flask, request
+import torch
+from torch import nn
+import json
+from torchvision import transforms
 from PIL import Image
-import io
-import os
-from pathlib import Path
-from dotenv import load_dotenv
+from model import Net
 
 
-app = Flask(__name__)
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent
+target_names = ['Angry', 'Disgust', 'Fear', 'Happy', 'Sad', 'Surprise', 'Neutral']
 
 
-@app.route('/get-emotions', methods=['POST'])
-def evaluate():
-    image_bytes = request.files['image'].read()
+# model = Net()
+# model.load_state_dict(torch.load('weights/model.pth', map_location=torch.device('cpu')))
+# model.eval()
 
-    image = Image.open(io.BytesIO(image_bytes))
-    image.save('test.jpeg')
-    return 'hello'
+with open('weights/mean_var.json') as file:
+    mean_var = json.load(file)
+
+transform = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Lambda(lambda image: image.repeat(3, 1, 1)),
+    transforms.Normalize(mean_var['mean'], mean_var['var'])
+])
 
 
-if __name__ == '__main__':
-    load_dotenv(os.path.join(BASE_DIR, '../.env'))
-    app.run(debug=os.getenv('DEBUG'), host='0.0.0.0', port=5001)
+@torch.no_grad()
+def evaluate(image: Image):
+    transformed = transform(image)
+
+    # outputs = model(image)
+    outputs = torch.rand(7)
+
+    probabilities = nn.Softmax(dim=0)(outputs)
+    probabilities = map(str, probabilities.numpy())
+
+    return dict(zip(target_names, probabilities))
+
+
+# print(evaluate(Image.open('test.jpeg')))

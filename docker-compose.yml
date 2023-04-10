@@ -29,7 +29,7 @@ services:
     ports:
       - "5001:5001"
     command: >
-      sh -c "python evaluation.py"
+      sh -c "python app.py"
     environment:
-      FLASK_APP: evaluation
+      FLASK_APP: app
 
