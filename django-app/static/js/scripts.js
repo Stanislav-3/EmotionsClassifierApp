@@ -77,3 +77,14 @@ function updateThumbnail(dropZoneElement, file) {
     thumbnailElement.style.backgroundImage = null;
   }
 }
+
+
+
+// Image gallery thing
+// function imageClicked(image_id) {
+//   alert(image_id)
+// }
+
+function imageClicked() {
+  alert('works!')
+}
