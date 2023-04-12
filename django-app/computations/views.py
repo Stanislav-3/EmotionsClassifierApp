@@ -49,23 +49,28 @@ def beautify_probabilities(probabilities):
 
 # @login_required(login_url=reverse_lazy('login'))
 def test_view(request):
-    # image = Image.open('/Users/stanislav/Desktop/EmotionsClassifierApp/django-app/computations/test_data/test2.jpeg')
-    image = Image.open('/Users/stanislav/Desktop/EmotionsClassifierApp/django-app/computations/test_data/test.png')
-    image, face_boxes = get_faces(image)
-    cropped_images = get_cropped_images(image, face_boxes)
-    # resized_images = get_resized_images(cropped_images, new_size=(48, 48))
-    resized_images = cropped_images
+    if request.method == 'GET':
+        # image = Image.open('/Users/stanislav/Desktop/EmotionsClassifierApp/django-app/computations/test_data/test2.jpeg')
+        image = Image.open('/Users/stanislav/Desktop/EmotionsClassifierApp/django-app/computations/test_data/test.png')
+        image, face_boxes = get_faces(image)
+        cropped_images = get_cropped_images(image, face_boxes)
+        # resized_images = get_resized_images(cropped_images, new_size=(48, 48))
+        resized_images = cropped_images
 
-    encoded_images = []
-    for image in resized_images:
-        buffer = io.BytesIO()
-        image.save(buffer, "JPEG")
-        img_str = base64.b64encode(buffer.getvalue()).decode('utf8')
-        encoded_images.append(img_str)
+        encoded_images = []
+        for image in resized_images:
+            buffer = io.BytesIO()
+            image.save(buffer, "JPEG")
+            img_str = base64.b64encode(buffer.getvalue()).decode('utf8')
+            encoded_images.append(img_str)
 
-    return render(request, 'computations/computations_choose_images.html', {
-        'images': encoded_images
-    })
+        return render(request, 'computations/computations_choose_images.html', {
+            'images': encoded_images
+        })
+    else:
+        in_memory_uploaded_file = request.FILES.get('image', None)
+        image = Image.open(in_memory_uploaded_file.file)
+        image.save('computations/test.jpeg')
 
 
 @login_required(login_url=reverse_lazy('login'))

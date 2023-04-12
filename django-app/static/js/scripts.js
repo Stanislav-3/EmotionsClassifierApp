@@ -47,7 +47,7 @@ document.querySelectorAll(".drop-zone__input").forEach((inputElement) => {
  */
 function updateThumbnail(dropZoneElement, file) {
   console.log('1')
-  let thumbnailElement = dropZoneElement.querySelector(".drop-zone__thumb");
+  let thumbnailElement= dropZoneElement.querySelector(".drop-zone__thumb");
 
   // First time - remove the prompt
   if (dropZoneElement.querySelector(".drop-zone__prompt")) {
@@ -99,6 +99,7 @@ function imageClicked(image_id, images_count) {
 
   activateImage(clickedElement)
   deactivateImages(otherElements)
+  uploadActivateImage(clickedElement)
 }
 
 
@@ -106,6 +107,40 @@ function activateImage(element) {
   element.style.opacity = "1"
 }
 
+
 function deactivateImages(elements) {
   elements.forEach((element) => element.style.opacity = "0.2")
+}
+
+
+ function dataURLtoFile(dataurl, filename) {
+        let arr = dataurl.split(','),
+            mime = arr[0].match(/:(.*?);/)[1],
+            bstr = atob(arr[1]),
+            n = bstr.length,
+            u8arr = new Uint8Array(n);
+
+        while(n--){
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+
+        return new File([u8arr], filename, {type:mime});
+    }
+
+
+function uploadActivateImage(element) {
+  const base64Image = element.getElementsByTagName("img")[0].src
+  let imageName = 'some_name.jpeg'
+
+  const dropZoneElement = document.getElementById("drop_zone_id");
+
+  // Make a file
+  const fileElement = document.getElementsByClassName("drop-zone__input")[0];
+  const dataTransfer = new DataTransfer();
+
+  dataTransfer.items.add(dataURLtoFile(base64Image, imageName));
+  fileElement.files = dataTransfer.files;
+
+  // Update
+  updateThumbnail(dropZoneElement, dataTransfer.files[0]);
 }
