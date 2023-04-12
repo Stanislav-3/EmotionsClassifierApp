@@ -81,10 +81,31 @@ function updateThumbnail(dropZoneElement, file) {
 
 
 // Image gallery thing
-// function imageClicked(image_id) {
-//   alert(image_id)
-// }
+function imageClicked(image_id, images_count) {
+  const id_prefix = "gallery_image_"
 
-function imageClicked() {
-  alert('works!')
+  const clickedElement = document.getElementById(image_id)
+
+  let otherElements = []
+  for(let i = 0; i < images_count; i += 1) {
+    otherElements.push(
+        document.getElementById(id_prefix + i)
+    )
+  }
+
+  otherElements = otherElements.filter((value) => {
+    return value.id !== clickedElement.id
+  })
+
+  activateImage(clickedElement)
+  deactivateImages(otherElements)
+}
+
+
+function activateImage(element) {
+  element.style.opacity = "1"
+}
+
+function deactivateImages(elements) {
+  elements.forEach((element) => element.style.opacity = "0.2")
 }

@@ -28,12 +28,14 @@
         <h2 class="heading-text">Choose <span> the face you'd like to process</span></h2>
         <ul class="image-gallery">
             {% for image in images %}
-                {% with image_id=forloop.counter0 %}
-                <li id="{{ image_id }}"
-                    onclick="imageClicked()">
-                    <img src="data:image/png;base64,{{ image }}" alt=""/>
-                    <div class="overlay"><span>Choose</span></div>
-                </li>
+                {% with y=forloop.counter0|stringformat:"s" %}
+                    {% with image_id="gallery_image_"|add:y %}
+                        <li id="{{ image_id }}"
+                            onclick="imageClicked('{{image_id}}', {{ images|length }})">
+                            <img src="data:image/png;base64,{{ image }}" alt=""/>
+                            <div class="overlay"><span>Choose</span></div>
+                        </li>
+                    {% endwith %}
                 {% endwith %}
             {% endfor %}
         </ul>

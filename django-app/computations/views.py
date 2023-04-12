@@ -47,7 +47,7 @@ def beautify_probabilities(probabilities):
     return output
 
 
-@login_required(login_url=reverse_lazy('login'))
+# @login_required(login_url=reverse_lazy('login'))
 def test_view(request):
     # image = Image.open('/Users/stanislav/Desktop/EmotionsClassifierApp/django-app/computations/test_data/test2.jpeg')
     image = Image.open('/Users/stanislav/Desktop/EmotionsClassifierApp/django-app/computations/test_data/test.png')
