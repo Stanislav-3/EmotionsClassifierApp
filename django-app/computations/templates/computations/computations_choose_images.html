@@ -1,29 +1,11 @@
-{% extends 'users/base.html' %}
+{% extends 'computations/computations_base.html' %}
+
 
 {% block title %}
-    Computations page
+    Choose the image
 {% endblock %}
 
-{% load crispy_forms_tags %}
-
-{% block content %}
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-
-        <div class="computations-wrapper">
-            <div class="drop-zone" id="drop_zone_id">
-                <span class="drop-zone__prompt">Drop image here or click to upload</span>
-                <input type="file" class="drop-zone__input" name="image">
-            </div>
-            <div class="computations-button-wrapper">
-                <button type="submit" class="btn" style="background-color: #F2EDED">Compute</button>
-            </div>
-        </div>
-    </form>
-
-{% endblock %}
-
-{% block image-gallary %}
+{% block image-gallery %}
     <div class="container">
         <h2 class="heading-text">Choose <span> the face you'd like to process</span></h2>
         <ul class="image-gallery">

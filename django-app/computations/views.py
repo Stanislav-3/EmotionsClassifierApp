@@ -18,59 +18,12 @@ import numpy as np
 from PIL import Image
 from .image_preprocessing.face_detection import get_faces
 from .image_preprocessing.image_crop import get_cropped_images, get_resized_images
+from .image_preprocessing.transforms import images_to_base64
 import requests
 import io
 import base64
 
 logger = logging.getLogger(__name__)
-
-
-target_names = {
-    0: 'Angry',
-    1: 'Disgust',
-    2: 'Fear',
-    3: 'Happy',
-    4: 'Sad',
-    5: 'Surprise',
-    6: 'Neutral',
-}
-
-
-def beautify_probabilities(probabilities):
-    logger.debug('computations.models get upload path')
-
-    output = '\n'
-    for idx in np.argsort(probabilities)[::-1]:
-        tabs = '\t\t' if len(target_names[idx]) > 3 else '\t\t\t'
-        output += f'{target_names[idx]} {tabs} {100 * probabilities[idx]:.1f}\n'
-
-    return output
-
-
-# @login_required(login_url=reverse_lazy('login'))
-def test_view(request):
-    if request.method == 'GET':
-        # image = Image.open('/Users/stanislav/Desktop/EmotionsClassifierApp/django-app/computations/test_data/test2.jpeg')
-        image = Image.open('/Users/stanislav/Desktop/EmotionsClassifierApp/django-app/computations/test_data/test.png')
-        image, face_boxes = get_faces(image)
-        cropped_images = get_cropped_images(image, face_boxes)
-        # resized_images = get_resized_images(cropped_images, new_size=(48, 48))
-        resized_images = cropped_images
-
-        encoded_images = []
-        for image in resized_images:
-            buffer = io.BytesIO()
-            image.save(buffer, "JPEG")
-            img_str = base64.b64encode(buffer.getvalue()).decode('utf8')
-            encoded_images.append(img_str)
-
-        return render(request, 'computations/computations_choose_images.html', {
-            'images': encoded_images
-        })
-    else:
-        in_memory_uploaded_file = request.FILES.get('image', None)
-        image = Image.open(in_memory_uploaded_file.file)
-        image.save('computations/test.jpeg')
 
 
 @login_required(login_url=reverse_lazy('login'))
@@ -79,35 +32,42 @@ def computations(request):
         logger.debug('rendering computations page | POST')
 
         in_memory_uploaded_file = request.FILES.get('image', None)
+
+        # Check if image is not specified
         if in_memory_uploaded_file is None:
             return render(request, 'computations/computations.html', {
                 'output': 'You didn\'t specify an image'
             })
 
         image = Image.open(in_memory_uploaded_file.file)
-        image, face_boxes = get_faces(image)
 
-        if len(face_boxes) == 0:
-            return render(request, 'computations/computations.html', {
-                'output': 'We didn\'t find any face in your image :('
-            })
+        is_preprocessed = True if request.POST.get('is_preprocessed') else False
+        if not is_preprocessed:
+            image, face_boxes = get_faces(image)
+            # Check if we found no faces on the image
+            if len(face_boxes) == 0:
+                return render(request, 'computations/computations.html', {
+                    'output': 'We didn\'t find any face in your image :('
+                })
 
-        cropped_images = get_cropped_images(image, face_boxes)
-        if len(face_boxes) > 1:
-            return render(request, 'computations/computations.html', {
-                'output': 'We didn\'t find any face in your image :('
-            })
+            cropped_images = get_cropped_images(image, face_boxes)
+            print(len(face_boxes))
+            if len(face_boxes) > 1:
+                # if there skip finding face and cropping
+                return render(request, 'computations/computations_choose_images.html', {
+                    'images': images_to_base64(cropped_images),
+                    'is_preprocessed': True
+                })
 
-        resized_images = get_resized_images(cropped_images)
+            resized_image = get_resized_images(cropped_images)[0]
+        else:
+            resized_image = get_resized_images([image, ])[0]
 
         buffer = io.BytesIO()
-        resized_images[0].save(buffer, format='JPEG')
+        resized_image.save(buffer, format='JPEG')
 
         response = requests.post('http://0.0.0.0:5001/get-emotions', files={'image': buffer.getvalue()})
         probabilities = json.loads(response.text)
-
-        probabilities = np.random.random(7)
-        output = beautify_probabilities(probabilities)
 
         # add a new computation to db
         file_content = ContentFile(request.FILES['image'].read())
@@ -117,13 +77,13 @@ def computations(request):
         computation.image.save(f'{computation.id}.jpg', file_content)
 
         return redirect(f'/computations/{request.user.username}/{computation.id}')
-    else:
+    elif request.method == 'GET':
         logger.debug('rendering computations page | GET')
         return render(request, 'computations/computations.html', {'output': 'Results will be there'})
 
 
 @login_required(login_url=reverse_lazy('login'))
-def result(request, username, computation_id):
+def computation_results(request, username, computation_id):
     logger.debug('rendering computations result page | GET')
 
     computation = Computation.objects.filter(id=computation_id)
@@ -137,7 +97,7 @@ def result(request, username, computation_id):
         return redirect(reverse('home'))
 
     return render(request, 'computations/result.html', {
-        'predictions': beautify_probabilities(computation.predictions),
+        'predictions': computation.predictions,
         'img_src': computation.image.url
     })
 
