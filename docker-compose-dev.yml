@@ -13,13 +13,9 @@ services:
   django:
     build:
       dockerfile: django-app/Dockerfile
-    volumes:
-      - ./django-app/staticfiles:/var/www/static/
-      - ./django-app/media:/var/www/media/
     command: >
       sh -c "python manage.py migrate &&
-             python manage.py collectstatic --no-input &&
-             gunicorn --bind 0.0.0.0:8000 django_app.wsgi"
+             python manage.py runserver 0.0.0.0:8000"
     environment:
       IN_DOCKER: 1
     ports:
@@ -36,19 +32,3 @@ services:
       sh -c "python app.py"
     environment:
       FLASK_APP: app
-  nginx:
-    build:
-      dockerfile: nginx/Dockerfile
-    restart: unless-stopped
-    ports:
-      - "80:80"
-    volumes:
-      - ./django-app/staticfiles:/var/www/static
-      - ./django-app/media:/var/www/media
-    depends_on:
-      - django
-      - flask
-#  volumes:
-#    static_volume:
-#    media_volume:
-

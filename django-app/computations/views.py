@@ -66,7 +66,7 @@ def computations(request):
         buffer = io.BytesIO()
         resized_image.save(buffer, format='JPEG')
 
-        response = requests.post('http://0.0.0.0:5001/get-emotions', files={'image': buffer.getvalue()})
+        response = requests.post('http://flask:5001/get-emotions', files={'image': buffer.getvalue()})
         probabilities = json.loads(response.text)
 
         # add a new computation to db
