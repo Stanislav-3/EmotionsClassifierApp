@@ -12,10 +12,10 @@ services:
       - ./data/postgres:/var/lib/postgresql/data
   django:
     build:
-      dockerfile: django-app/Dockerfile
+      dockerfile: django_app/Dockerfile
     volumes:
-      - ./django-app/staticfiles:/var/www/static/
-      - ./django-app/media:/var/www/media/
+      - ./django_app/staticfiles:/var/www/static/
+      - ./django_app/media:/var/www/media/
     command: >
       sh -c "python manage.py migrate &&
              python manage.py collectstatic --no-input &&
@@ -29,7 +29,7 @@ services:
       - flask
   flask:
     build:
-      dockerfile: flask-cv/Dockerfile
+      dockerfile: flask_cv/Dockerfile
     ports:
       - "5001:5001"
     command: >
@@ -43,8 +43,8 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./django-app/staticfiles:/var/www/static
-      - ./django-app/media:/var/www/media
+      - ./django_app/staticfiles:/var/www/static
+      - ./django_app/media:/var/www/media
     depends_on:
       - django
       - flask

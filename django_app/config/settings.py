@@ -65,7 +65,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'django_app.urls'
+ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
@@ -84,7 +84,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'django_app.wsgi.application'
+WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database
@@ -145,7 +145,7 @@ STATICFILES_DIRS = (
 )
 
 STATIC_ROOT = '/var/www/static/'
-MEDIA_ROOT = '/var/www/media/'
+MEDIA_ROOT = '/var/www/media/' if not DEBUG else os.path.join(BASE_DIR, 'media')
 
 
 # Default primary key field type

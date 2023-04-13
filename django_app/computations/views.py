@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
-from django_app.settings import BASE_DIR
+from config.settings import BASE_DIR, DEBUG
 from django.core.files.base import ContentFile
 from django.contrib.auth import get_user_model
 
@@ -18,10 +18,8 @@ import numpy as np
 from PIL import Image
 from .image_preprocessing.face_detection import get_faces
 from .image_preprocessing.image_crop import get_cropped_images, get_resized_images
-from .image_preprocessing.transforms import images_to_base64
+from .image_preprocessing.transforms import images_to_base64, image_to_bytes
 import requests
-import io
-import base64
 
 logger = logging.getLogger(__name__)
 
@@ -60,17 +58,17 @@ def computations(request):
                 })
 
             resized_image = get_resized_images(cropped_images)[0]
+            cropped_image = cropped_images[0]
         else:
             resized_image = get_resized_images([image, ])[0]
+            cropped_image = image
 
-        buffer = io.BytesIO()
-        resized_image.save(buffer, format='JPEG')
-
-        response = requests.post('http://flask:5001/get-emotions', files={'image': buffer.getvalue()})
+        flask_url = 'http://0.0.0.0:5001/get-emotions' if DEBUG else 'http://flask:5001/get-emotions'
+        response = requests.post(flask_url, files={'image': image_to_bytes(resized_image)})
         probabilities = json.loads(response.text)
 
         # add a new computation to db
-        file_content = ContentFile(request.FILES['image'].read())
+        file_content = ContentFile(image_to_bytes(cropped_image))
         computation = Computation(predictions=list(probabilities.values()),
                                   user=request.user)
         computation.save()

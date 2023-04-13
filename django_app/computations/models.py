@@ -1,7 +1,7 @@
 import os
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
-from users.models import CustomUser
+from django_app.users.models import CustomUser
 import logging
 
 

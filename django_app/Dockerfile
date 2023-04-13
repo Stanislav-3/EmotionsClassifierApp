@@ -8,7 +8,7 @@ ENV PIPENV_VENV_IN_PROJECT 1
 
 RUN apt-get update && apt-get install ffmpeg libsm6 libxext6  -y
 
-COPY django-app/ .
+COPY django_app/ .
 COPY .env ../.
 
 #RUN pip install --upgrade pip
