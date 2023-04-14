@@ -100,6 +100,17 @@ def computation_results(request, username, computation_id):
     })
 
 
+target_names = {
+    0: 'Angry',
+    1: 'Disgust',
+    2: 'Fear',
+    3: 'Happy',
+    4: 'Sad',
+    5: 'Surprise',
+    6: 'Neutral',
+}
+
+
 @login_required(login_url=reverse_lazy('login'))
 def _download(request, username, computation_id, ext):
     logger.debug(f'_download {request.user.username}/{computation_id}.{ext}')
