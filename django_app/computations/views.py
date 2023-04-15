@@ -1,3 +1,4 @@
+import io
 import mimetypes
 
 from django.http import HttpResponse
@@ -77,29 +78,23 @@ def computations(request):
         computation.save()
         computation.image.save(f'{computation.id}.jpg', file_content)
 
-        return redirect(f'/computations/{request.user.username}/{computation.id}')
+        return redirect(f'/computations/{computation.id}')
     elif request.method == 'GET':
         logger.debug('rendering computations page | GET')
         return render(request, 'computations/computations.html', {'output': 'Results will be there'})
 
 
 @login_required(login_url=reverse_lazy('login'))
-def computation_results(request, username, computation_id):
+def computation_results(request, computation_id):
     logger.debug('rendering computations result page | GET')
 
-    computation = Computation.objects.filter(id=computation_id)
-    user = get_user_model().objects.filter(username=username)
-
-    if computation.count() != 1 or user.count() != 1:
-        return redirect(reverse('home'))
-
-    computation, user = computation[0], user[0]
-    if computation.user != user:
+    _computations = Computation.objects.filter(id=computation_id)
+    if _computations.count() != 1 or _computations[0].user != request.user:
         return redirect(reverse('home'))
 
     return render(request, 'computations/result.html', {
-        'predictions': computation.predictions,
-        'img_src': computation.image.url
+        'predictions': _computations[0].predictions,
+        'img_src': _computations[0].image.url
     })
 
 
@@ -114,70 +109,45 @@ target_names = {
 }
 
 
-@login_required(login_url=reverse_lazy('login'))
-def _download(request, username, computation_id, ext):
-    logger.debug(f'_download {request.user.username}/{computation_id}.{ext}')
-
-    filename = f'{computation_id}.{ext}'
-    filepath = f'{BASE_DIR}/computations/dumps/{ext}/{request.user.username}/{filename}'
-
-    file = open(filepath, 'rb')
-    mime_type, _ = mimetypes.guess_type(filepath)
-    response = HttpResponse(file, content_type=mime_type)
-    response['Content-Disposition'] = "attachment; filename=%s" % filename
+def _download(filebytes, filename, filetype):
+    response = HttpResponse(filebytes, content_type=f'application/{filetype}')
+    response['Content-Disposition'] = f'attachment; filename={filename}'
     return response
 
 
 @login_required(login_url=reverse_lazy('login'))
-def dump_json(request, username, computation_id):
+def dump_json(request, computation_id):
     logger.debug(f'dump json')
 
-    directory = f'computations/dumps/json/{request.user.username}'
-    computation = Computation.objects.filter(id=computation_id)[0]
+    _computations = Computation.objects.filter(id=computation_id)
+    if _computations.count() != 1 or _computations[0].user != request.user:
+        return redirect(reverse('home'))
 
-    if os.path.exists(directory):
-        if os.path.exists(f'{directory}/{computation_id}.json'):
-            return _download(request, username, computation_id, 'json')
-    else:
-        os.makedirs(directory)
+    with open(f'media/computations/images/{request.user.id}/{computation_id}.jpg', "rb") as image_file:
+        filebytes = json.dumps({
+            f'Computation': {
+                'Predictions': _computations[0].predictions,
+                'Image_format': 'jpeg',
+                'Image_raw': str(image_file.read())
+            }
+        }).encode('utf-8')
 
-    b = None
-
-    with open(f'media/computations/images/{request.user.id}/{computation_id}.jpg', "rb") as image:
-        b = str(image.read())
-
-    d = {f'Computation': {
-        'Image': b,
-        'Predictions': computation.predictions
-
-    }}
-
-    f = open(f'{directory}/{computation.id}.json', 'w')
-    json.dump(d, f)
-
-    return _download(request, username, computation_id, 'json')
+    return _download(filebytes, 'Computations.json', 'json')
 
 
 @login_required(login_url=reverse_lazy('login'))
-def dump_pdf(request, username, computation_id):
+def dump_pdf(request, computation_id):
     logger.debug(f'dump pdf')
 
-    directory = f'computations/dumps/pdf/{request.user.username}'
-
-    if os.path.exists(directory):
-        if os.path.exists(f'{directory}/{computation_id}.pdf'):
-            return _download(request, username, computation_id, 'pdf')
-    else:
-        os.makedirs(directory)
+    _computations = Computation.objects.filter(id=computation_id)
+    if _computations.count() != 1 or _computations[0].user != request.user:
+        return redirect(reverse('home'))
+    predictions = _computations[0].predictions
 
     pdf = FPDF('P', 'mm', 'Letter')
-
     pdf.add_page()
-
-    computation = Computation.objects.filter(id=computation_id)[0]
-    predictions = computation.predictions
-
     pdf.set_font('helvetica', 'b', 18)
+
     pdf.cell(0, 10, f'Image', ln=True)
     pdf.image(f'media/computations/images/{request.user.id}/{computation_id}.jpg', w=48, h=48)
 
@@ -186,6 +156,6 @@ def dump_pdf(request, username, computation_id):
     for i in range(len(predictions)):
         pdf.cell(0, 10, f'{target_names[i]}:{predictions[i]}', ln=True)
 
-    pdf.output(f'{directory}/{computation_id}.pdf')
+    filebytes = pdf.output(dest='s').encode('latin1')
 
-    return _download(request, username, computation_id, 'pdf')
+    return _download(filebytes, 'Computations.pdf', 'pdf')
