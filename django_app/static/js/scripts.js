@@ -30,7 +30,9 @@ document.querySelectorAll(".drop-zone__input").forEach((inputElement) => {
     console.log('6')
     e.preventDefault();
 
-    if (e.dataTransfer.files.length) {
+    const file_type = e.dataTransfer.files[0].type
+
+    if (e.dataTransfer.files.length && (file_type === 'image/png' || file_type === 'image/jpeg')) {
       inputElement.files = e.dataTransfer.files;
       updateThumbnail(dropZoneElement, e.dataTransfer.files[0]);
     }

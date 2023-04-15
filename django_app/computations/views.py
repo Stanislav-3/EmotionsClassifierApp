@@ -38,12 +38,14 @@ def computations(request):
             })
 
         image = Image.open(in_memory_uploaded_file.file)
+        if len(image.getbands()) == 4:
+            image = image.convert('RGB')
 
         is_preprocessed = True if request.POST.get('is_preprocessed') else False
         if not is_preprocessed:
-            image, face_boxes = get_faces(image)
-            # Check if we found no faces on the image
+            face_boxes = get_faces(image)
             if len(face_boxes) == 0:
+                # No faces on the image
                 return render(request, 'computations/computations.html', {
                     'output': 'We didn\'t find any face in your image :('
                 })
@@ -51,7 +53,7 @@ def computations(request):
             cropped_images = get_cropped_images(image, face_boxes)
             print(len(face_boxes))
             if len(face_boxes) > 1:
-                # if there skip finding face and cropping
+                # Multiple faces are on the image
                 return render(request, 'computations/computations_choose_images.html', {
                     'images': images_to_base64(cropped_images),
                     'is_preprocessed': True

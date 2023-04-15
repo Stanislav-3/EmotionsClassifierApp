@@ -25,9 +25,12 @@ transform = transforms.Compose([
 
 @torch.no_grad()
 def evaluate(image: Image):
+    if image.mode != 'L':
+        image = image.convert('L')
+
     transformed = transform(image)
 
-    # outputs = model(image)
+    # outputs = model(transformed)
     outputs = torch.rand(7)
 
     probabilities = nn.Softmax(dim=0)(outputs)
