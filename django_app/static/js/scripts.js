@@ -46,8 +46,11 @@ document.querySelectorAll(".drop-zone__input").forEach((inputElement) => {
  *
  * @param {HTMLElement} dropZoneElement
  * @param {File} file
+ * @param {Boolean} state
+ * @param {Boolean} clickedElement
  */
-function updateThumbnail(dropZoneElement, file) {
+function updateThumbnail(dropZoneElement, file,
+                         state= false, clickedElement = null) {
   console.log('1')
   let thumbnailElement= dropZoneElement.querySelector(".drop-zone__thumb");
 
@@ -78,8 +81,12 @@ function updateThumbnail(dropZoneElement, file) {
     console.log('-1')
     thumbnailElement.style.backgroundImage = null;
   }
-}
 
+  // Update state
+  console.log('update state from callback for .drop-zone__input')
+  setIsProcessedState(state)
+  activateImage(clickedElement)
+}
 
 
 // Image gallery thing
@@ -99,18 +106,39 @@ function imageClicked(image_id, images_count) {
     return value.id !== clickedElement.id
   })
 
+  console.log('imageClicked')
   activateImage(clickedElement)
   deactivateImages(otherElements)
   uploadActivateImage(clickedElement)
 }
 
+function setIsProcessedState(state) {
+  console.log('setIsProcessedState', state)
+  const isProcessedElement = document.getElementById("is_preprocessed")
+
+  const state_str = state.toString()
+  isProcessedElement.value = state_str.charAt(0).toUpperCase() + state_str.slice(1)
+
+  // deactivate image gallery if exists
+  if (state === false) {
+    const imageGalleryElement = document.getElementById("image-gallery-id")
+    if (imageGalleryElement !== null) {
+      deactivateImages(Array.from(imageGalleryElement.children))
+    }
+  }
+}
+
 
 function activateImage(element) {
+  if (element === null) return
+
   element.style.opacity = "1"
 }
 
 
 function deactivateImages(elements) {
+  if (elements === null) return
+
   elements.forEach((element) => element.style.opacity = "0.2")
 }
 
@@ -144,5 +172,5 @@ function uploadActivateImage(element) {
   fileElement.files = dataTransfer.files;
 
   // Update
-  updateThumbnail(dropZoneElement, dataTransfer.files[0]);
+  updateThumbnail(dropZoneElement, dataTransfer.files[0], true, element);
 }

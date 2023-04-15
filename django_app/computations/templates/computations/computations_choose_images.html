@@ -8,7 +8,7 @@
 {% block image-gallery %}
     <div class="container">
         <h2 class="heading-text">Choose <span> the face you'd like to process</span></h2>
-        <ul class="image-gallery">
+        <ul class="image-gallery" id="image-gallery-id">
             {% for image in images %}
                 {% with y=forloop.counter0|stringformat:"s" %}
                     {% with image_id="gallery_image_"|add:y %}

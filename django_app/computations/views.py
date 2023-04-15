@@ -41,7 +41,8 @@ def computations(request):
         if len(image.getbands()) == 4:
             image = image.convert('RGB')
 
-        is_preprocessed = True if request.POST.get('is_preprocessed') else False
+        print("is_preprocessed: ", request.POST.get('is_preprocessed'))
+        is_preprocessed = True if request.POST.get('is_preprocessed') == 'True' else False
         if not is_preprocessed:
             face_boxes = get_faces(image)
             if len(face_boxes) == 0:
