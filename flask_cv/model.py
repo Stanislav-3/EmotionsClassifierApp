@@ -19,10 +19,10 @@ class Net(nn.Module):
 
             nn.AdaptiveAvgPool2d(output_size=(1, 1)),
             nn.Flatten(),
-            #         nn.Dropout1d(p=0.2),
+            nn.Dropout1d(p=0.2),
             nn.Linear(512, 256),
             nn.BatchNorm1d(256),
-            #         nn.Dropout1d(p=0.2),
+            nn.Dropout1d(p=0.2),
             nn.ReLU(),
             nn.Linear(256, 7)
         )

@@ -20,8 +20,8 @@ down: ## Stop prod containers
 build: ## Build prod containers
 	docker-compose -f $(PROD_COMPOSE_FILE) build
 
-build kafka:
+build-kafka:
 	docker-compose -f $(PROD_COMPOSE_FILE) up -d zookeeper kafka
 
-up kafka:
+up-kafka:
 	docker-compose -f $(PROD_COMPOSE_FILE) up -d zookeeper kafka

@@ -19,7 +19,7 @@ services:
     command: >
       sh -c "python manage.py migrate &&
              python manage.py collectstatic --no-input &&
-             gunicorn --bind 0.0.0.0:8000 django_app.wsgi"
+             gunicorn --bind 0.0.0.0:8000 config.wsgi"
     environment:
       IN_DOCKER: 1
     ports:
@@ -33,7 +33,7 @@ services:
     ports:
       - "5001:5001"
     command: >
-      sh -c "gunicorn --bind 0.0.0.0:5001 flask_cv.wsgi"
+      sh -c "gunicorn --bind 0.0.0.0:5001 -w 4 'wsgi:start_server()'"
     environment:
       FLASK_APP: app
   nginx:

@@ -89,8 +89,13 @@ def computations(request):
             resized_image = get_resized_images([image, ])[0]
             cropped_image = image
 
-        flask_url = 'http://0.0.0.0:5001/get-emotions' if DEBUG else 'http://flask:5001/get-emotions'
-        response = requests.post(flask_url, files={'image': image_to_bytes(resized_image)})
+        try:
+            flask_url = 'http://0.0.0.0:5001/get-emotions' if DEBUG else 'http://flask:5001/get-emotions'
+            response = requests.post(flask_url, files={'image': image_to_bytes(resized_image)})
+        except ConnectionError:
+            return render(request, 'computations/computations.html', {
+                'output': 'Sorry ;(\tSomething went wrong... Maybe the model is not yet configured'
+            })
 
         if response.status_code == 500:
             return render(request, 'computations/computations.html', {
