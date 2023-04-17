@@ -69,6 +69,11 @@ def computations(request):
 
         flask_url = 'http://0.0.0.0:5001/get-emotions' if DEBUG else 'http://flask:5001/get-emotions'
         response = requests.post(flask_url, files={'image': image_to_bytes(resized_image)})
+
+        if response.status_code == 500:
+            return render(request, 'computations/computations.html', {
+                'output': 'Sorry ;(\tSomething went wrong'
+            })
         probabilities = json.loads(response.text)
 
         # add a new computation to db

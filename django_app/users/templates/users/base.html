@@ -19,7 +19,12 @@
     <div class="container-fluid">
 
         <ul class="navbar-nav">
-            <li class="nav-item"> <a class="nav-link" href="{% url 'home' %}">Home</a></li>
+            {% if request.get_full_path != '/' %}
+                <li class="nav-item"> <a class="nav-link" href="{% url 'home' %}">Home</a></li>
+            {% endif %}
+            {% if request.get_full_path != '/computations' %}
+                <li class="nav-item"> <a class="nav-link" href="{% url 'computations' %}"> Computations </a></li>
+            {% endif %}
         </ul>
 
         <ul class="navbar-nav">

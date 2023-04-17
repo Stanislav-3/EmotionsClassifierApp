@@ -4,7 +4,7 @@ import json
 from torchvision import transforms
 from PIL import Image
 from model import Net
-
+import numpy as np
 
 target_names = ['Angry', 'Disgust', 'Fear', 'Happy', 'Sad', 'Surprise', 'Neutral']
 
@@ -31,8 +31,10 @@ def evaluate(image: Image):
     transformed = transform(image)
 
     # outputs = model(transformed)
-    outputs = torch.rand(7)
 
+    # probabilities = np.random.rand(7)
+
+    outputs = torch.rand(7)
     probabilities = nn.Softmax(dim=0)(outputs)
     probabilities = map(str, probabilities.numpy())
 

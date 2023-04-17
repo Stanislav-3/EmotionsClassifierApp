@@ -6,7 +6,7 @@ from django.contrib.auth.views import PasswordChangeView, PasswordResetView, Pas
 from django.contrib.auth.forms import PasswordChangeForm, PasswordResetForm
 from .forms import RegisterForm, ProfileForm
 from django.contrib.auth import get_user_model
-# from computations.models import Computation
+from computations.models import Computation
 import logging
 
 
@@ -66,10 +66,9 @@ def profile(request):
         logger.debug('Profile view | GET')
 
         form = ProfileForm(instance=request.user)
-        # computations = Computation.objects.filter(user=request.user)
-        computations = []
+        computations = Computation.objects.filter(user=request.user)
 
-        links = [f'/computations/{request.user.username}/{computation.id}' for computation in computations]
+        links = [f'/computations/{computation.id}' for computation in computations]
         texts = [f'Computation #{computation.id}' for computation in computations]
 
     return render(request, 'users/profile.html', {'form': form, 'computations': zip(links, texts)})

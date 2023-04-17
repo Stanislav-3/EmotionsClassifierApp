@@ -12,10 +12,16 @@ build-dev: ## Build dev containers
 	docker-compose -f $(DEV_COMPOSE_FILE) build
 
 up:  ## Run prod containers
-	docker-compose -f $(PROD_COMPOSE_FILE) up -d
+	docker-compose -f $(PROD_COMPOSE_FILE) up -d database django flask nginx
 
 down: ## Stop prod containers
 	docker-compose -f $(PROD_COMPOSE_FILE) down
 
 build: ## Build prod containers
 	docker-compose -f $(PROD_COMPOSE_FILE) build
+
+build kafka:
+	docker-compose -f $(PROD_COMPOSE_FILE) up -d zookeeper kafka
+
+up kafka:
+	docker-compose -f $(PROD_COMPOSE_FILE) up -d zookeeper kafka
