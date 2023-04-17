@@ -25,6 +25,28 @@ import requests
 logger = logging.getLogger(__name__)
 
 
+target_names = {
+    0: 'Angry',
+    1: 'Disgust',
+    2: 'Fear',
+    3: 'Happy',
+    4: 'Sad',
+    5: 'Surprise',
+    6: 'Neutral',
+}
+
+
+def beautify_probabilities(probabilities):
+    logger.debug('computations.models get upload path')
+
+    output = '\n'
+    for idx in np.argsort(probabilities)[::-1]:
+        tabs = '\t\t' if len(target_names[idx]) > 3 else '\t\t\t'
+        output += f'{target_names[idx]} {tabs} {100 * probabilities[idx]:.1f}  \t%\n'
+
+    return output + str(probabilities)
+
+
 @login_required(login_url=reverse_lazy('login'))
 def computations(request):
     if request.method == 'POST':
@@ -98,20 +120,9 @@ def computation_results(request, computation_id):
         return redirect(reverse('home'))
 
     return render(request, 'computations/result.html', {
-        'predictions': _computations[0].predictions,
+        'predictions': beautify_probabilities(_computations[0].predictions),
         'img_src': _computations[0].image.url
     })
-
-
-target_names = {
-    0: 'Angry',
-    1: 'Disgust',
-    2: 'Fear',
-    3: 'Happy',
-    4: 'Sad',
-    5: 'Surprise',
-    6: 'Neutral',
-}
 
 
 def _download(filebytes, filename, filetype):

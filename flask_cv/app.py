@@ -4,7 +4,7 @@ import io
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-from evaluation import evaluate
+from evaluation import evaluate, load_evaluation_stuff
 
 
 app = Flask(__name__)
@@ -26,4 +26,6 @@ def get_evaluation():
 
 if __name__ == '__main__':
     load_dotenv(os.path.join(BASE_DIR, '../.env'))
+    load_evaluation_stuff()
+
     app.run(debug=os.getenv('DEBUG'), host='0.0.0.0', port=5001)
