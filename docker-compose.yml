@@ -14,8 +14,8 @@ services:
     build:
       dockerfile: django_app/Dockerfile
     volumes:
-      - ./django_app/staticfiles:/var/www/static/
-      - ./django_app/media:/var/www/media/
+      - static_volume:/var/www/static/
+      - media_volume:/var/www/media/
     command: >
       sh -c "python manage.py migrate &&
              python manage.py collectstatic --no-input &&
@@ -43,12 +43,31 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./django_app/staticfiles:/var/www/static
-      - ./django_app/media:/var/www/media
+      - static_volume:/var/www/static
+      - media_volume:/var/www/media
     depends_on:
       - django
       - flask
-#  volumes:
-#    static_volume:
-#    media_volume:
+  zookeeper:
+    image: zookeeper
+    ports:
+      - "2181:2181"
+  kafka:
+    image: confluent/kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: localhost
+      KAFKA_CREATE_TOPICS: "request_topic:1:1, response_topic:1:1"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+    depends_on:
+      - zookeeper
+#    command: >
+#      bash -c "sleep 5 &&
+#      kafka-topics --bootstrap-server kafka:9092 --create --topic my_topic --partitions 1 --replication-factor 1"
+
+volumes:
+  static_volume:
+  media_volume:
 

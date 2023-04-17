@@ -5,6 +5,7 @@ WORKDIR /usr/src/django_app
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PIPENV_VENV_IN_PROJECT 1
+ENV KAFKA_BOOTSTRAP_SERVERS kafka:9092
 
 RUN apt-get update && apt-get install ffmpeg libsm6 libxext6  -y
 
