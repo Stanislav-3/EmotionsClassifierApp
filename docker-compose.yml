@@ -33,7 +33,7 @@ services:
     ports:
       - "5001:5001"
     command: >
-      sh -c "python app.py"
+      sh -c "gunicorn --bind 0.0.0.0:5001 flask_cv.wsgi"
     environment:
       FLASK_APP: app
   nginx:

@@ -15,9 +15,10 @@ BASE_DIR = Path(__file__).resolve().parent
 
 @app.route('/get-emotions', methods=['POST'])
 def get_evaluation():
+    app.logger.info('In /get-emotions entrypoint')
+
     image_bytes = request.files['image'].read()
     image = Image.open(io.BytesIO(image_bytes))
-    image.save('test.jpeg')
 
     evaluation = evaluate(image)
 

@@ -44,7 +44,7 @@ def beautify_probabilities(probabilities):
         tabs = '\t\t' if len(target_names[idx]) > 3 else '\t\t\t'
         output += f'{target_names[idx]} {tabs} {100 * probabilities[idx]:.1f}  \t%\n'
 
-    return output + str(probabilities)
+    return output
 
 
 @login_required(login_url=reverse_lazy('login'))
