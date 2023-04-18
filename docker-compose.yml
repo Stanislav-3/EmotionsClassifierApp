@@ -33,9 +33,11 @@ services:
     ports:
       - "5001:5001"
     command: >
-      sh -c "gunicorn --bind 0.0.0.0:5001 -w 4 'wsgi:start_server()'"
+      sh -c "gunicorn --bind 0.0.0.0:5001 -w 1 'wsgi:start_server()'"
+#      sh -c "python app.py"
     environment:
       FLASK_APP: app
+#    network_mode: "host"
   nginx:
     build:
       dockerfile: nginx/Dockerfile
@@ -48,21 +50,22 @@ services:
     depends_on:
       - django
       - flask
-  zookeeper:
-    image: zookeeper
-    ports:
-      - "2181:2181"
-  kafka:
-    image: confluent/kafka
-    ports:
-      - "9092:9092"
-    environment:
-      KAFKA_ADVERTISED_HOST_NAME: localhost
-      KAFKA_CREATE_TOPICS: "request_topic:1:1, response_topic:1:1"
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
-    depends_on:
-      - zookeeper
+#  zookeeper:
+#    image: zookeeper
+#    ports:
+#      - "2181:2181"
+#  kafka:
+#    image: confluent/kafka
+#    ports:
+#      - "9092:9092"
+#    environment:
+#      KAFKA_ADVERTISED_HOST_NAME: localhost
+#      KAFKA_CREATE_TOPICS: "request_topic:1:1, response_topic:1:1"
+#      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+#      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+#    depends_on:
+#      - zookeeper
+
 #    command: >
 #      bash -c "sleep 5 &&
 #      kafka-topics --bootstrap-server kafka:9092 --create --topic my_topic --partitions 1 --replication-factor 1"

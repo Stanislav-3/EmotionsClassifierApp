@@ -41,8 +41,8 @@ def beautify_probabilities(probabilities):
 
     output = '\n'
     for idx in np.argsort(probabilities)[::-1]:
-        tabs = '\t\t' if len(target_names[idx]) > 3 else '\t\t\t'
-        output += f'{target_names[idx]} {tabs} {100 * probabilities[idx]:.1f}  \t%\n'
+        tabs = '\t\t' if len(target_names[idx]) > 4 else '\t\t\t'
+        output += f'{target_names[idx]} {tabs} {100 * probabilities[idx]:.1f}     \t%\n'
 
     return output
 
@@ -144,7 +144,7 @@ def dump_json(request, computation_id):
     if _computations.count() != 1 or _computations[0].user != request.user:
         return redirect(reverse('home'))
 
-    with open(f'media/computations/images/{request.user.id}/{computation_id}.jpg', "rb") as image_file:
+    with open(f'/var/www/media/computations/images/{request.user.id}/{computation_id}.jpg', "rb") as image_file:
         filebytes = json.dumps({
             f'Computation': {
                 'Predictions': _computations[0].predictions,
@@ -170,7 +170,7 @@ def dump_pdf(request, computation_id):
     pdf.set_font('helvetica', 'b', 18)
 
     pdf.cell(0, 10, f'Image', ln=True)
-    pdf.image(f'media/computations/images/{request.user.id}/{computation_id}.jpg', w=48, h=48)
+    pdf.image(f'/var/www/media/computations/images/{request.user.id}/{computation_id}.jpg', w=48, h=48)
 
     pdf.cell(0, 10, f'Predictions', ln=True)
     pdf.set_font('helvetica', '', 16)

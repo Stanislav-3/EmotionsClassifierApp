@@ -12,7 +12,7 @@ build-dev: ## Build dev containers
 	docker-compose -f $(DEV_COMPOSE_FILE) build
 
 up:  ## Run prod containers
-	docker-compose -f $(PROD_COMPOSE_FILE) up -d database django flask nginx
+	docker-compose -f $(PROD_COMPOSE_FILE) up -d
 
 down: ## Stop prod containers
 	docker-compose -f $(PROD_COMPOSE_FILE) down
